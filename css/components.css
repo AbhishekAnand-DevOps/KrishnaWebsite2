@@ -1,0 +1,540 @@
+/* Glassmorphism */
+.glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="light"] .hero .glass {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-dark {
+    background: rgba(18, 18, 18, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+/* Buttons */
+.btn-primary, .btn-secondary, .btn-search, .btn-text, .btn-icon {
+    font-weight: 500;
+    transition: var(--transition);
+    border-radius: var(--radius);
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: #fff;
+    padding: 0.75rem 1.5rem;
+}
+.btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(201, 152, 85, 0.4);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: var(--text-color);
+    border: 2px solid var(--primary);
+    padding: 0.75rem 1.5rem;
+}
+.btn-secondary:hover {
+    background: var(--primary);
+    color: #fff;
+}
+
+.btn-text {
+    color: var(--text-color);
+    padding: 0.5rem;
+}
+.btn-text:hover {
+    color: var(--primary);
+}
+
+.btn-icon {
+    font-size: 1.25rem;
+    padding: 0.5rem;
+    color: var(--text-color);
+}
+
+.w-100 { width: 100%; }
+.mt-4 { margin-top: 1rem; }
+
+/* Search Box Tabs & Fields */
+.search-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.tab {
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-bottom: 2px solid transparent;
+    opacity: 0.7;
+}
+.tab.active {
+    opacity: 1;
+    border-bottom-color: var(--primary);
+}
+
+.search-fields {
+    display: flex;
+    gap: 1rem;
+    background: #fff;
+    padding: 0.5rem;
+    border-radius: var(--radius);
+}
+.search-fields input, .search-fields select {
+    border: none;
+    padding: 0.75rem;
+    flex: 1;
+    background: transparent;
+    outline: none;
+    color: #1a1a1a;
+}
+.search-fields .btn-search {
+    background: var(--primary);
+    color: #fff;
+    padding: 0 2rem;
+    border-radius: calc(var(--radius) - 4px);
+}
+
+/* Property Card */
+.property-card {
+    background: var(--surface-color);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+}
+.property-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+.property-img {
+    height: 200px;
+    overflow: hidden;
+}
+.property-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+.property-card:hover .property-img img {
+    transform: scale(1.1);
+}
+.property-info {
+    padding: 1.5rem;
+}
+.property-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+.property-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+.property-meta {
+    display: flex;
+    gap: 1rem;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+}
+
+/* Modals */
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: var(--transition);
+}
+.modal:not(.hidden) {
+    visibility: visible;
+    opacity: 1;
+}
+.modal-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(5px);
+}
+.modal-content {
+    position: relative;
+    width: 92%;
+    max-width: 620px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 2rem;
+    border-radius: var(--radius);
+    z-index: 2001;
+    transform: translateY(20px);
+    transition: var(--transition);
+}
+.modal:not(.hidden) .modal-content {
+    transform: translateY(0);
+}
+
+/* ─── Two-column form rows ─── */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 0;
+}
+.form-row .form-group {
+    margin-bottom: 1.25rem;
+}
+
+/* ─── Upload Box ─── */
+.upload-box {
+    border: 2px dashed var(--primary);
+    border-radius: var(--radius);
+    background: rgba(201, 152, 85, 0.05);
+    cursor: pointer;
+    transition: var(--transition);
+    min-height: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 1rem;
+}
+.upload-box:hover,
+.upload-box.drag-over {
+    background: rgba(201, 152, 85, 0.12);
+    border-color: var(--primary-hover);
+    box-shadow: 0 0 0 3px rgba(201, 152, 85, 0.2);
+}
+.upload-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    text-align: center;
+    pointer-events: none;
+}
+.upload-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.25rem;
+}
+.upload-placeholder p {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--primary);
+    margin: 0;
+}
+.upload-placeholder span {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+.upload-preview {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+}
+.upload-thumb-wrap {
+    position: relative;
+    display: inline-block;
+}
+.upload-thumb {
+    width: 120px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid var(--primary);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.upload-remove {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 22px;
+    height: 22px;
+    background: #ef4444;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+.upload-remove:hover { background: #dc2626; }
+.upload-thumb-name {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin: 0;
+}
+.btn-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    color: inherit;
+    opacity: 0.7;
+}
+
+/* Forms */
+.form-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    background: var(--surface-color);
+    color: var(--text-color);
+    border-radius: var(--radius);
+    outline: none;
+    transition: var(--transition);
+}
+.form-group input:focus, .form-group select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(201, 152, 85, 0.2);
+}
+.glass-dark .form-group input, .glass-dark .form-group select {
+    background: rgba(255,255,255,0.05);
+    border-color: rgba(255,255,255,0.2);
+    color: #fff;
+}
+.glass-dark .form-group label {
+    color: #ccc;
+}
+.glass-dark option {
+    background: #1e1e1e;
+    color: #ffffff;
+}
+
+/* Login Views */
+.login-view {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-color);
+}
+.admin-login-bg {
+    background: #0f172a;
+}
+.login-card {
+    width: 90%;
+    max-width: 400px;
+    padding: 3rem 2rem;
+    border-radius: var(--radius);
+    text-align: center;
+}
+.login-card h2 { margin-bottom: 0.5rem; }
+.login-card p {
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+.error-msg {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+.hidden { display: none !important; }
+
+.admin-trigger {
+    opacity: 0.05;
+    cursor: pointer;
+    user-select: none;
+    padding: 0 5px;
+}
+.text-light { color: #ccc; }
+
+/* ─── Property Badge ─── */
+.property-img {
+    position: relative;
+}
+.property-badge {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+.badge-sell {
+    background: var(--primary);
+    color: #fff;
+}
+.badge-rent {
+    background: #3b82f6;
+    color: #fff;
+}
+
+/* ─── Loading Spinner ─── */
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--border-color);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 4rem auto;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ─── Empty State ─── */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+    grid-column: 1 / -1;
+}
+.empty-state p {
+    font-size: 1.1rem;
+}
+
+/* ─── Toast Notifications ─── */
+#toast-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    pointer-events: none;
+}
+.toast {
+    padding: 0.875rem 1.5rem;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-weight: 500;
+    background: #1e1e1e;
+    color: #fff;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    max-width: 360px;
+}
+.toast-show {
+    opacity: 1;
+    transform: translateY(0);
+}
+.toast-success { border-left: 4px solid #10b981; }
+.toast-error   { border-left: 4px solid #ef4444; }
+.toast-warning { border-left: 4px solid #f59e0b; }
+.toast-info    { border-left: 4px solid #3b82f6; }
+
+/* ─── Form error inline ─── */
+.form-error-msg {
+    color: #ef4444;
+    font-size: 0.875rem;
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+/* ─── Card Edit Button ─── */
+.card-edit-btn {
+    position: absolute;
+    bottom: 0.75rem;
+    right: 0.75rem;
+    background: rgba(18, 18, 18, 0.82);
+    color: #c99855;
+    border: 1px solid rgba(201, 152, 85, 0.6);
+    border-radius: 50px;
+    padding: 0.3rem 0.85rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+    transition: all 0.2s ease;
+    opacity: 0;
+    transform: translateY(6px);
+    z-index: 5;
+}
+.property-card:hover .card-edit-btn {
+    opacity: 1;
+    transform: translateY(0);
+}
+.card-edit-btn:hover {
+    background: #c99855;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(201, 152, 85, 0.45);
+}
+
+/* ─── Edit Textarea ─── */
+.edit-textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    border-radius: var(--radius);
+    outline: none;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 0.9rem;
+    transition: var(--transition);
+    line-height: 1.5;
+}
+.edit-textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(201, 152, 85, 0.2);
+}
+
+/* ─── Admin action buttons ─── */
+.action-btn {
+    padding: 0.35rem 0.85rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: transparent;
+    border: 1.5px solid;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+.action-btn:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+}
+
+/* ─── Edit upload box smaller variant ─── */
+.edit-upload-box {
+    min-height: 100px !important;
+}

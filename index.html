@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krishna Realty | Premium Real Estate</title>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+
+<body>
+
+    <!-- MAIN VIEW -->
+    <div id="view-main" class="view active">
+        <!-- Navbar -->
+        <nav class="navbar">
+            <div class="logo">Krishna<span>Realty</span></div>
+            <ul class="nav-links">
+                <li><a href="#buy">Buy</a></li>
+                <li><a href="#rent">Rent</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#boyspg">Boys PG</a></li>
+                <li><a href="#girlspg">Girls PG</a></li>
+                <li><a href="#hotel">Hotel</a></li>
+            </ul>
+            <div class="nav-actions">
+                <button id="theme-toggle" class="btn-icon" aria-label="Toggle Dark Mode">🌓</button>
+                <button id="btn-user-login" class="btn-text">Log In</button>
+                <button id="btn-post-property" class="btn-primary">Post Property</button>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <header class="hero slide-up">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h1 class="hero-title slide-up-delay-1">Discover Your Dream Home</h1>
+                <p class="hero-subtitle slide-up-delay-2">Premium properties tailored for luxurious living.</p>
+
+                <!-- Search Box -->
+                <div class="search-box glass slide-up-delay-3">
+                    <div class="search-tabs">
+                        <button class="tab active">Buy</button>
+                        <button class="tab">Rent</button>
+                        <button class="tab">Projects</button>
+                    </div>
+                    <div class="search-fields">
+                        <input type="text" placeholder="Location (e.g. New York, Mumbai)">
+                        <select>
+                            <option>Property Type</option>
+                            <option>Apartment</option>
+                            <option>Villa</option>
+                            <option>Penthouse</option>
+                            <option>Boys PG</option>
+                            <option>Girls PG</option>
+                            <option>Hotel</option>
+                        </select>
+                        <select>
+                            <option>Budget</option>
+                            <option>$500k - $1M</option>
+                            <option>$1M - $5M</option>
+                            <option>$5M+</option>
+                        </select>
+                        <button class="btn-search">Search</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Featured Properties -->
+        <section class="featured-section section-padding">
+            <h2 class="section-title">Featured Properties</h2>
+            <div id="properties-grid" class="properties-grid">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section section-padding">
+            <div class="cta-banner">
+                <h2>Want to Sell or Rent your property?</h2>
+                <p>Join thousands of satisfied owners who trust Krishna Realty.</p>
+                <button id="btn-cta-post" class="btn-secondary">List Your Property</button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Krishna Realty</h3>
+                    <p>Elevating your lifestyle, one home at a time.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#">About Us</a>
+                    <a href="#">Contact</a>
+                    <a href="#">Privacy Policy</a>
+                </div>
+                <div class="footer-social">
+                    <a href="#">IG</a>
+                    <a href="#">TW</a>
+                    <a href="#">FB</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; 2026 Krishna Realty. All rights reserved<span id="admin-trigger" class="admin-trigger">-</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- POST PROPERTY MODAL -->
+    <div id="modal-post-property" class="modal hidden">
+        <div class="modal-overlay" id="modal-overlay-post"></div>
+        <div class="modal-content glass-dark">
+            <button class="btn-close" id="btn-close-modal">&times;</button>
+            <h2>Post Your Property</h2>
+            <form id="form-post-property">
+                <!-- Photo Upload -->
+                <div class="form-group">
+                    <label>Property Photos</label>
+                    <div class="upload-box" id="upload-box" onclick="document.getElementById('prop-image-input').click()">
+                        <input type="file" id="prop-image-input" accept="image/*" style="display:none" multiple>
+                        <div class="upload-placeholder" id="upload-placeholder">
+                            <div class="upload-icon">📷</div>
+                            <p>Click or drag &amp; drop photos here</p>
+                            <span>JPG, PNG, WebP · Max 5MB each</span>
+                        </div>
+                        <div class="upload-preview" id="upload-preview"></div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Intent</label>
+                        <select id="prop-intent" required>
+                            <option value="sell">Sell</option>
+                            <option value="rent">Rent</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Property Type</label>
+                        <select id="prop-type" required>
+                            <option value="Apartment">Apartment</option>
+                            <option value="Villa">Villa</option>
+                            <option value="Penthouse">Penthouse</option>
+                            <option value="Estate">Estate</option>
+                            <option value="Commercial">Commercial</option>
+                            <option value="Boys PG">Boys PG</option>
+                            <option value="Girls PG">Girls PG</option>
+                            <option value="Hotel">Hotel</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Property Title</label>
+                    <input type="text" id="prop-title" placeholder="e.g. Luxury Villa with Pool" required>
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="prop-location" placeholder="City or Neighborhood" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Expected Price (₹/$)</label>
+                        <input type="number" id="prop-price" placeholder="Enter amount" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Area (sq.ft)</label>
+                        <input type="number" id="prop-area" placeholder="e.g. 1500" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Bedrooms</label>
+                        <input type="number" id="prop-beds" placeholder="e.g. 3" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Bathrooms</label>
+                        <input type="number" id="prop-baths" placeholder="e.g. 2" min="0" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Your Name</label>
+                        <input type="text" id="prop-owner-name" placeholder="Full Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile Number</label>
+                        <input type="tel" id="prop-owner-phone" placeholder="+91 98765 43210" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary w-100" style="margin-top:0.5rem;">🏠 Submit Listing</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- EDIT PROPERTY MODAL -->
+    <div id="modal-edit-property" class="modal hidden">
+        <div class="modal-overlay" id="modal-overlay-edit"></div>
+        <div class="modal-content glass-dark">
+            <button class="btn-close" id="btn-close-edit-modal">&times;</button>
+            <h2>✏️ Edit Property</h2>
+            <form id="form-edit-property">
+                <input type="hidden" id="edit-prop-id">
+
+                <!-- Photo Upload -->
+                <div class="form-group">
+                    <label>Property Photo</label>
+                    <div class="upload-box edit-upload-box" id="edit-upload-box" onclick="document.getElementById('edit-image-input').click()">
+                        <input type="file" id="edit-image-input" accept="image/*" style="display:none">
+                        <div class="upload-placeholder" id="edit-upload-placeholder">
+                            <div class="upload-icon">📷</div>
+                            <p>Click to change photo</p>
+                            <span>JPG, PNG, WebP · Max 5MB</span>
+                        </div>
+                        <div class="upload-preview" id="edit-upload-preview"></div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Intent</label>
+                        <select id="edit-intent" required>
+                            <option value="sell">Sell</option>
+                            <option value="rent">Rent</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Property Type</label>
+                        <select id="edit-type" required>
+                            <option value="Apartment">Apartment</option>
+                            <option value="Villa">Villa</option>
+                            <option value="Penthouse">Penthouse</option>
+                            <option value="Estate">Estate</option>
+                            <option value="Commercial">Commercial</option>
+                            <option value="Boys PG">Boys PG</option>
+                            <option value="Girls PG">Girls PG</option>
+                            <option value="Hotel">Hotel</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Property Title</label>
+                    <input type="text" id="edit-title" placeholder="e.g. Luxury Villa with Pool" required>
+                </div>
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="text" id="edit-location" placeholder="City or Neighborhood" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="edit-description" rows="3" placeholder="Describe the property…" class="edit-textarea"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Price (₹/$)</label>
+                        <input type="number" id="edit-price" placeholder="Enter amount" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Area (sq.ft)</label>
+                        <input type="number" id="edit-area" placeholder="e.g. 1500" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Bedrooms</label>
+                        <input type="number" id="edit-beds" placeholder="e.g. 3" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Bathrooms</label>
+                        <input type="number" id="edit-baths" placeholder="e.g. 2" min="0" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Owner Name</label>
+                        <input type="text" id="edit-owner-name" placeholder="Full Name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile Number</label>
+                        <input type="tel" id="edit-owner-phone" placeholder="+91 98765 43210" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="edit-status" required>
+                        <option value="Active">✅ Active</option>
+                        <option value="Pending">⏳ Pending</option>
+                        <option value="Sold">🏷️ Sold</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-primary w-100" style="margin-top:0.5rem;">💾 Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- USER LOGIN VIEW -->
+    <div id="view-user-login" class="view hidden login-view">
+        <div class="login-card glass">
+            <h2>User Login</h2>
+            <p>Welcome back to Krishna Realty.</p>
+            <form id="form-user-login">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="user@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary w-100">Sign In</button>
+            </form>
+            <p class="mt-4 text-muted" style="font-size: 0.875rem;">Don't have an account? <a href="#"
+                    id="link-create-account" style="color: var(--primary); font-weight: 500;">Sign Up</a></p>
+            <button id="btn-user-return" class="btn-text mt-4">Return to Website</button>
+        </div>
+    </div>
+
+    <!-- USER REGISTER VIEW -->
+    <div id="view-user-register" class="view hidden login-view">
+        <div class="login-card glass">
+            <h2>Create Account</h2>
+            <p>Join Krishna Realty today.</p>
+            <form id="form-user-register">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" placeholder="John Doe" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="user@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary w-100">Sign Up</button>
+            </form>
+            <p class="mt-4 text-muted" style="font-size: 0.875rem;">Already have an account? <a href="#"
+                    id="link-login-account" style="color: var(--primary); font-weight: 500;">Log In</a></p>
+            <button id="btn-register-return" class="btn-text mt-4">Return to Website</button>
+        </div>
+    </div>
+
+    <!-- ADMIN LOGIN VIEW -->
+    <div id="view-admin-login" class="view hidden login-view admin-login-bg">
+        <div class="login-card glass-dark">
+            <h2>Admin Portal</h2>
+            <p>Authorized personnel only.</p>
+            <form id="form-admin-login">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="admin-user" placeholder="admin" required>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="admin-pass" placeholder="••••••••" required>
+                </div>
+                <p id="admin-error" class="error-msg hidden">Invalid credentials.</p>
+                <button type="submit" class="btn-primary w-100">Access Dashboard</button>
+            </form>
+            <button id="btn-admin-return" class="btn-text mt-4 text-light">Return to Website</button>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD VIEW -->
+    <div id="view-admin-dashboard" class="view hidden admin-layout">
+        <aside class="admin-sidebar">
+            <div class="logo">KR Admin</div>
+            <ul class="admin-nav">
+                <li class="active"><a href="#">Dashboard</a></li>
+                <li><a href="#">Properties</a></li>
+                <li><a href="#">Users</a></li>
+                <li><a href="#">Settings</a></li>
+            </ul>
+            <button id="btn-admin-logout" class="btn-secondary w-100">Logout</button>
+        </aside>
+        <main class="admin-main">
+            <header class="admin-header">
+                <h2>Dashboard Overview</h2>
+                <button id="admin-theme-toggle" class="btn-icon">🌓</button>
+            </header>
+
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">🏠</div>
+                    <h3>Total Listings</h3>
+                    <p class="stat-value" id="stat-total">—</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <h3>Active</h3>
+                    <p class="stat-value" id="stat-active">—</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏳</div>
+                    <h3>Pending Review</h3>
+                    <p class="stat-value" id="stat-pending">—</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <h3>Registered Users</h3>
+                    <p class="stat-value" id="stat-users">—</p>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👁</div>
+                    <h3>Total Views</h3>
+                    <p class="stat-value" id="stat-views">—</p>
+                </div>
+            </div>
+
+            <section class="admin-data-section">
+                <h3>Recent Properties</h3>
+                <div class="table-responsive">
+                    <div class="admin-table-toolbar">
+                        <input type="text" id="admin-search" placeholder="🔍  Search properties…"
+                            class="admin-search-input">
+                        <select id="admin-status-filter" class="admin-filter-select">
+                            <option value="">All Statuses</option>
+                            <option value="Active">Active</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Sold">Sold</option>
+                        </select>
+                    </div>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Details</th>
+                                <th>Status</th>
+                                <th>Price</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-table-body">
+                            <!-- Injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts: Backend Services -->
+    <script src="js/db.js"></script>
+    <script src="js/crypto.service.js"></script>
+    <script src="js/auth.service.js"></script>
+    <script src="js/property.service.js"></script>
+    <!-- Scripts: App -->
+    <script src="js/state.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
