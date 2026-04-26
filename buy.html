@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy Property | Krishna Realty</title>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo"><a href="index.html">Krishna<span>Realty</span></a></div>
+        <ul class="nav-links">
+            <li><a href="buy.html" class="active">Buy</a></li>
+            <li><a href="rent.html">Rent</a></li>
+            <li><a href="projects.html">Projects</a></li>
+            <li><a href="boyspg.html">Boys PG</a></li>
+            <li><a href="girlspg.html">Girls PG</a></li>
+            <li><a href="hotel.html">Hotel</a></li>
+        </ul>
+        <div class="nav-actions">
+            <button id="theme-toggle" class="btn-icon" aria-label="Toggle Dark Mode">🌓</button>
+            <button id="btn-user-login" class="btn-text">Log In</button>
+            <button id="btn-post-property" class="btn-primary">Post Property</button>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <div class="page-header-overlay"></div>
+        <div class="page-header-content">
+            <h1 class="page-title">Properties for Sale</h1>
+            <p class="page-subtitle">Find your dream home from our curated collection</p>
+        </div>
+    </header>
+
+    <!-- Properties Section -->
+    <section class="section-padding">
+        <div class="properties-grid" id="properties-grid">
+            <!-- Injected via JS -->
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>Krishna Realty</h3>
+                <p>Elevating your lifestyle, one home at a time.</p>
+            </div>
+            <div class="footer-links">
+                <a href="#">About Us</a>
+                <a href="#">Contact</a>
+                <a href="#">Privacy Policy</a>
+            </div>
+            <div class="footer-social">
+                <a href="#">IG</a>
+                <a href="#">TW</a>
+                <a href="#">FB</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 Krishna Realty. All rights reserved<span id="admin-trigger" class="admin-trigger">-</span>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/db.js"></script>
+    <script src="js/crypto.service.js"></script>
+    <script src="js/auth.service.js"></script>
+    <script src="js/property.service.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Load buy properties on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await KrishnaDB.open();
+            await PropertyService.seedIfEmpty();
+            
+            const grid = document.getElementById('properties-grid');
+            grid.innerHTML = '<div class="loading-spinner"></div>';
+            
+            const props = await PropertyService.getProperties({ intent: 'sell', status: 'Active' });
+            
+            if (props.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><p>No properties for sale found.</p></div>';
+                return;
+            }
+            
+            grid.innerHTML = props.map(prop => `
+                <div class="property-card slide-up" data-id="${prop.id}">
+                    <div class="property-img">
+                        <img src="${prop.image}" alt="${prop.title}" onerror="this.src='assets/images/property1.png'">
+                        <span class="property-badge badge-sell">For Sale</span>
+                    </div>
+                    <div class="property-info">
+                        <div class="property-price">${prop.priceFormatted}</div>
+                        <h3 class="property-title">${prop.title}</h3>
+                        <p class="text-muted" style="margin-bottom:1rem;">${prop.location}</p>
+                        <div class="property-meta">
+                            <span>🛏 ${prop.beds} Beds</span>
+                            <span>🚿 ${prop.baths} Baths</span>
+                            <span>📐 ${prop.area}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        });
+    </script>
+</body>
+
+</html>

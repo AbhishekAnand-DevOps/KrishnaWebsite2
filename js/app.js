@@ -44,6 +44,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     const adminTableBody = document.getElementById('admin-table-body');
     const adminStats = document.querySelectorAll('.stat-value');
 
+    const hasAdminViews = document.getElementById('view-admin-login') && document.getElementById('view-admin-dashboard');
+
+    if (!hasAdminViews) {
+        if (themeToggle) {
+            htmlElement.setAttribute('data-theme', state.theme);
+            themeToggle.addEventListener('click', () => {
+                state.theme = state.theme === 'light' ? 'dark' : 'light';
+                htmlElement.setAttribute('data-theme', state.theme);
+                localStorage.setItem('theme', state.theme);
+            });
+        }
+
+        if (adminTrigger) {
+            adminTrigger.addEventListener('click', () => {
+                window.location.href = 'index.html#admin';
+            });
+        }
+
+        return;
+    }
+
     // ─────────────────────────────────────────────
     // BOOT — Initialize DB, seed data, restore session
     // ─────────────────────────────────────────────
@@ -53,6 +74,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     initTheme();
     await loadMainProperties();
     await refreshAdminDashboard();
+
+    if (window.location.hash === '#admin') {
+        switchView(state.isAdmin ? 'view-admin-dashboard' : 'view-admin-login');
+        history.replaceState(null, '', window.location.pathname);
+    }
 
     // ─────────────────────────────────────────────
     // VIEW ROUTING
@@ -124,13 +150,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
         propertiesGrid.innerHTML = props.map(prop => {
-            const canEdit = state.isAdmin || (state.currentUser && state.currentUser.id === prop.submittedBy);
             return `
             <div class="property-card slide-up" data-id="${prop.id}">
                 <div class="property-img">
                     <img src="${prop.image}" alt="${prop.title}" onerror="this.src='assets/images/property1.png'">
                     <span class="property-badge badge-${prop.intent}">${prop.intent === 'sell' ? 'For Sale' : 'For Rent'}</span>
-                    ${canEdit ? `<button class="card-edit-btn" onclick="openEditModal(${prop.id})" title="Edit property">✏️ Edit</button>` : ''}
                 </div>
                 <div class="property-info">
                     <div class="property-price">${prop.priceFormatted}</div>

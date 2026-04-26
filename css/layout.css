@@ -105,6 +105,44 @@
     opacity: 0.9;
 }
 
+/* Page Header (for category pages) */
+.page-header {
+    height: 50vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: url('../assets/images/hero.png') center/cover no-repeat;
+    padding-top: 80px;
+    margin-bottom: 2rem;
+}
+
+.page-header-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+}
+
+.page-header-content {
+    position: relative;
+    z-index: 2;
+    color: #fff;
+    max-width: 800px;
+    width: 100%;
+    padding: 0 20px;
+}
+
+.page-title {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.page-subtitle {
+    font-size: 1.25rem;
+    opacity: 0.9;
+}
+
 /* Search Box */
 .search-box {
     border-radius: var(--radius);
@@ -115,7 +153,9 @@
 /* Properties Grid */
 .properties-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 360px));
+    justify-content: center;
+    align-items: start;
     gap: 2rem;
 }
 
