@@ -43,6 +43,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const propertiesGrid = document.getElementById('properties-grid');
     const adminTableBody = document.getElementById('admin-table-body');
     const adminStats = document.querySelectorAll('.stat-value');
+    const navMenuToggle = document.getElementById('nav-menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
 
     const hasAdminViews = document.getElementById('view-admin-login') && document.getElementById('view-admin-dashboard');
 
@@ -56,9 +58,39 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
+        if (navMenuToggle && navLinks) {
+            navMenuToggle.addEventListener('click', () => {
+                const isOpen = navLinks.classList.toggle('open');
+                navMenuToggle.setAttribute('aria-expanded', isOpen.toString());
+                navMenuToggle.textContent = isOpen ? '✕' : '☰';
+            });
+
+            navLinks.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    if (navLinks.classList.contains('open')) {
+                        navLinks.classList.remove('open');
+                        navMenuToggle.setAttribute('aria-expanded', 'false');
+                        navMenuToggle.textContent = '☰';
+                    }
+                });
+            });
+        }
+
         if (adminTrigger) {
             adminTrigger.addEventListener('click', () => {
                 window.location.href = 'index.html#admin';
+            });
+        }
+
+        if (btnUserLogin) {
+            btnUserLogin.addEventListener('click', () => {
+                window.location.href = 'index.html';
+            });
+        }
+
+        if (btnPostProperty) {
+            btnPostProperty.addEventListener('click', () => {
+                window.location.href = 'index.html';
             });
         }
 
