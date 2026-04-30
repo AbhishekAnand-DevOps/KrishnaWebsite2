@@ -42,6 +42,17 @@
     color: var(--primary);
 }
 
+.logo img,
+.footer-logo img {
+    max-height: 3.2rem;
+    width: block;
+    display: block;
+}
+
+.footer-logo img {
+    max-height: 2.0rem;
+}
+
 .logo-icon {
     display: inline-flex;
     align-items: center;
@@ -283,4 +294,45 @@
 
     .hero-title { font-size: 2.5rem; }
     .search-fields { flex-direction: column; }
+}
+
+/* View Toggle */
+.view-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.btn-toggle {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border-color);
+    background: var(--surface-color);
+    color: var(--text-color);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-toggle.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+}
+
+.btn-toggle:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* Properties Map */
+.properties-map {
+    height: 500px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-top: 2rem;
+}
+
+.properties-map.hidden {
+    display: none;
 }

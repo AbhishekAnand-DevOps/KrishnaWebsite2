@@ -41,12 +41,101 @@ document.addEventListener('DOMContentLoaded', async () => {
     const adminError = document.getElementById('admin-error');
 
     const propertiesGrid = document.getElementById('properties-grid');
+    const propertiesMap = document.getElementById('properties-map');
+    const listViewBtn = document.getElementById('list-view-btn');
+    const mapViewBtn = document.getElementById('map-view-btn');
     const adminTableBody = document.getElementById('admin-table-body');
     const adminStats = document.querySelectorAll('.stat-value');
     const navMenuToggle = document.getElementById('nav-menu-toggle');
     const navLinks = document.querySelector('.nav-links');
 
     const hasAdminViews = document.getElementById('view-admin-login') && document.getElementById('view-admin-dashboard');
+
+    // ─────────────────────────────────────────────
+    // MAP SUPPORT
+    // ─────────────────────────────────────────────
+    let map;
+    const locationCoords = {
+        'New York City, NY': [40.7128, -74.0060],
+        'Los Angeles, CA': [34.0522, -118.2437],
+        'Chicago, IL': [41.8781, -87.6298],
+        'Houston, TX': [29.7604, -95.3698],
+        'Phoenix, AZ': [33.4484, -112.0740],
+        'Philadelphia, PA': [39.9526, -75.1652],
+        'San Antonio, TX': [29.4241, -98.4936],
+        'San Diego, CA': [32.7157, -117.1611],
+        'Dallas, TX': [32.7767, -96.7970],
+        'San Jose, CA': [37.3382, -121.8863],
+        'Austin, TX': [30.2672, -97.7431],
+        'Jacksonville, FL': [30.3322, -81.6557],
+        'Fort Worth, TX': [32.7555, -97.3308],
+        'Columbus, OH': [39.9612, -82.9988],
+        'Charlotte, NC': [35.2271, -80.8431],
+        'San Francisco, CA': [37.7749, -122.4194],
+        'Indianapolis, IN': [39.7684, -86.1581],
+        'Seattle, WA': [47.6062, -122.3321],
+        'Denver, CO': [39.7392, -104.9903],
+        'Boston, MA': [42.3601, -71.0589]
+    };
+
+    function getCoordinates(location) {
+        return locationCoords[location] || [40.7128, -74.0060];
+    }
+
+    function renderMapView(props) {
+        if (!propertiesMap) return;
+        propertiesMap.classList.remove('hidden');
+        
+        if (map) {
+            map.remove();
+        }
+
+        map = L.map('properties-map').setView([39.8283, -98.5795], 4);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        props.forEach(prop => {
+            const coords = getCoordinates(prop.location);
+            const marker = L.marker(coords).addTo(map);
+            
+            marker.bindPopup(`
+                <div style="max-width: 200px;">
+                    <img src="${prop.image}" alt="${prop.title}" style="width: 100%; height: 100px; object-fit: cover; border-radius: 4px; margin-bottom: 8px;" onerror="this.src='assets/images/property1.png'">
+                    <h4 style="margin: 0 0 4px 0; font-size: 14px;">${prop.title}</h4>
+                    <p style="margin: 0 0 4px 0; color: #666; font-size: 12px;">${prop.location}</p>
+                    <p style="margin: 0; font-weight: bold; color: #007bff;">${prop.priceFormatted}</p>
+                </div>
+            `);
+        });
+
+        if (props.length > 0) {
+            const group = new L.featureGroup(props.map(prop => L.marker(getCoordinates(prop.location))));
+            map.fitBounds(group.getBounds().pad(0.1));
+        }
+    }
+
+    function switchToListView() {
+        if (listViewBtn) listViewBtn.classList.add('active');
+        if (mapViewBtn) mapViewBtn.classList.remove('active');
+        if (propertiesGrid) propertiesGrid.classList.remove('hidden');
+        if (propertiesMap) propertiesMap.classList.add('hidden');
+        renderProperties(state.properties);
+    }
+
+    function switchToMapView() {
+        if (listViewBtn) listViewBtn.classList.remove('active');
+        if (mapViewBtn) mapViewBtn.classList.add('active');
+        if (propertiesGrid) propertiesGrid.classList.add('hidden');
+        if (propertiesMap) propertiesMap.classList.remove('hidden');
+        renderMapView(state.properties);
+    }
+
+    if (listViewBtn && mapViewBtn) {
+        listViewBtn.addEventListener('click', switchToListView);
+        mapViewBtn.addEventListener('click', switchToMapView);
+    }
 
     if (!hasAdminViews) {
         if (themeToggle) {
@@ -173,7 +262,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         propertiesGrid.innerHTML = `<div class="loading-spinner"></div>`;
         const props = await PropertyService.getProperties({ ...filters, status: 'Active' });
         state.properties = props;
-        renderProperties(props);
+        
+        if (propertiesMap && !propertiesMap.classList.contains('hidden')) {
+            renderMapView(props);
+        } else {
+            renderProperties(props);
+        }
     }
 
     function renderProperties(props) {
