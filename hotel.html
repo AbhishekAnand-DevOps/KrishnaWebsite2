@@ -9,8 +9,6 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700&display=swap"
         rel="stylesheet">
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <!-- Stylesheets -->
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/layout.css">
@@ -23,7 +21,7 @@
 
     <!-- Navbar -->
     <nav class="navbar">
-        <div class="logo"><a href="index.html"><img src="assets/images/Logo.png" alt="Krishna Realty logo" class="logo-img"></a></div>
+        <div class="logo"><a href="index.html"><img src="assets/images/logo-high-res.png" alt="PGnearby" class="site-logo"></a></div>
         <ul class="nav-links">
             <li><a href="buy.html">Buy</a></li>
             <li><a href="rent.html">Rent</a></li>
@@ -51,21 +49,16 @@
 
     <!-- Properties Section -->
     <section class="section-padding">
-        <div class="view-toggle">
-            <button id="list-view-btn" class="btn-toggle active">List View</button>
-            <button id="map-view-btn" class="btn-toggle">Map View</button>
-        </div>
         <div class="properties-grid" id="properties-grid">
             <!-- Injected via JS -->
         </div>
-        <div id="properties-map" class="properties-map hidden"></div>
     </section>
 
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-brand">
-                <a href="index.html" class="footer-logo"><img src="assets/images/Logo.png" alt="Krishna Realty logo"></a>
+                    <img src="assets/images/logo-high-res.png" alt="PGnearby" class="site-logo">
                 <p>Elevating your lifestyle, one home at a time.</p>
             </div>
             <div class="footer-links">
@@ -80,7 +73,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            &copy; 2026 Krishna Realty. All rights reserved<span id="admin-trigger" class="admin-trigger">-</span>
+            &copy; 2026 PGnearby. All rights reserved<span id="admin-trigger" class="admin-trigger">-</span>
         </div>
     </footer>
 
@@ -92,41 +85,23 @@
     <script src="js/state.js"></script>
     <script src="js/app.js"></script>
     <script>
-        let currentProperties = [];
-        let map;
-
-        // Mock coordinates for locations
-        const locationCoords = {
-            'New York City, NY': [40.7128, -74.0060],
-            'Los Angeles, CA': [34.0522, -118.2437],
-            'Chicago, IL': [41.8781, -87.6298],
-            'Houston, TX': [29.7604, -95.3698],
-            'Phoenix, AZ': [33.4484, -112.0740],
-            'Philadelphia, PA': [39.9526, -75.1652],
-            'San Antonio, TX': [29.4241, -98.4936],
-            'San Diego, CA': [32.7157, -117.1611],
-            'Dallas, TX': [32.7767, -96.7970],
-            'San Jose, CA': [37.3382, -121.8863],
-            'Austin, TX': [30.2672, -97.7431],
-            'Jacksonville, FL': [30.3322, -81.6557],
-            'Fort Worth, TX': [32.7555, -97.3308],
-            'Columbus, OH': [39.9612, -82.9988],
-            'Charlotte, NC': [35.2271, -80.8431],
-            'San Francisco, CA': [37.7749, -122.4194],
-            'Indianapolis, IN': [39.7684, -86.1581],
-            'Seattle, WA': [47.6062, -122.3321],
-            'Denver, CO': [39.7392, -104.9903],
-            'Boston, MA': [42.3601, -71.0589]
-        };
-
-        function getCoordinates(location) {
-            return locationCoords[location] || [40.7128, -74.0060]; // Default to NYC
-        }
-
-        function renderListView(props) {
+        // Load Hotel properties on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await KrishnaDB.open();
+            await PropertyService.seedIfEmpty();
+            
             const grid = document.getElementById('properties-grid');
+            grid.innerHTML = '<div class="loading-spinner"></div>';
+            
+            const props = await PropertyService.getProperties({ type: 'Hotel', status: 'Active' });
+            
+            if (props.length === 0) {
+                grid.innerHTML = '<div class="empty-state"><p>No hotel properties found.</p></div>';
+                return;
+            }
+            
             grid.innerHTML = props.map(prop => `
-                <div class="property-card slide-up" data-id="${prop.id}">
+                <div class="property-card slide-up" data-id="${prop.id}" onclick="window.location.href='details.html?id=${prop.id}'">
                     <div class="property-img">
                         <img src="${prop.image}" alt="${prop.title}" onerror="this.src='assets/images/property1.png'">
                         <span class="property-badge badge-${prop.intent}">${prop.intent === 'sell' ? 'For Sale' : 'For Rent'}</span>
@@ -141,86 +116,13 @@
                             <span>📐 ${prop.area}</span>
                         </div>
                     </div>
+                    <div class="property-footer" style="padding: 0 1.5rem 1.5rem;">
+                        <a href="details.html?id=${prop.id}" class="btn-secondary w-100" style="text-align: center; text-decoration: none; display: block;">View Details</a>
+                    </div>
                 </div>
             `).join('');
-        }
-
-        function renderMapView(props) {
-            const mapContainer = document.getElementById('properties-map');
-            mapContainer.classList.remove('hidden');
-            
-            if (map) {
-                map.remove();
-            }
-
-            map = L.map('properties-map').setView([39.8283, -98.5795], 4); // Center of US
-
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors'
-            }).addTo(map);
-
-            props.forEach(prop => {
-                const coords = getCoordinates(prop.location);
-                const marker = L.marker(coords).addTo(map);
-                
-                marker.bindPopup(`
-                    <div style="max-width: 200px;">
-                        <img src="${prop.image}" alt="${prop.title}" style="width: 100%; height: 100px; object-fit: cover; border-radius: 4px; margin-bottom: 8px;" onerror="this.src='assets/images/property1.png'">
-                        <h4 style="margin: 0 0 4px 0; font-size: 14px;">${prop.title}</h4>
-                        <p style="margin: 0 0 4px 0; color: #666; font-size: 12px;">${prop.location}</p>
-                        <p style="margin: 0; font-weight: bold; color: #007bff;">${prop.priceFormatted}</p>
-                    </div>
-                `);
-            });
-
-            // Fit map to markers
-            if (props.length > 0) {
-                const group = new L.featureGroup(props.map(prop => L.marker(getCoordinates(prop.location))));
-                map.fitBounds(group.getBounds().pad(0.1));
-            }
-        }
-
-        function switchToListView() {
-            document.getElementById('list-view-btn').classList.add('active');
-            document.getElementById('map-view-btn').classList.remove('active');
-            document.getElementById('properties-grid').classList.remove('hidden');
-            document.getElementById('properties-map').classList.add('hidden');
-            renderListView(currentProperties);
-        }
-
-        function switchToMapView() {
-            document.getElementById('list-view-btn').classList.remove('active');
-            document.getElementById('map-view-btn').classList.add('active');
-            document.getElementById('properties-grid').classList.add('hidden');
-            document.getElementById('properties-map').classList.remove('hidden');
-            renderMapView(currentProperties);
-        }
-
-        // Load Hotel properties on page load
-        document.addEventListener('DOMContentLoaded', async () => {
-            await KrishnaDB.open();
-            await PropertyService.seedIfEmpty();
-            
-            const grid = document.getElementById('properties-grid');
-            grid.innerHTML = '<div class="loading-spinner"></div>';
-            
-            const props = await PropertyService.getProperties({ type: 'Hotel', status: 'Active' });
-            currentProperties = props;
-            
-            if (props.length === 0) {
-                grid.innerHTML = '<div class="empty-state"><p>No hotel properties found.</p></div>';
-                return;
-            }
-            
-            renderListView(props);
-
-            // Setup toggle buttons
-            document.getElementById('list-view-btn').addEventListener('click', switchToListView);
-            document.getElementById('map-view-btn').addEventListener('click', switchToMapView);
         });
     </script>
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </body>
 
 </html>

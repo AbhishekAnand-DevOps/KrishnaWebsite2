@@ -9,14 +9,13 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700&display=swap"
         rel="stylesheet">
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <!-- Stylesheets -->
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/layout.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/animations.css">
     <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/details.css">
 </head>
 
 <body>
@@ -25,7 +24,9 @@
     <div id="view-main" class="view active">
         <!-- Navbar -->
         <nav class="navbar">
-            <div class="logo"><a href="index.html"><img src="assets/images/Logo.png" alt="Krishna Realty logo" class="logo-img"></a></div>
+            <div class="logo">
+                <img src="assets/images/logo-high-res.png" alt="PGnearby" class="site-logo">
+            </div>
             <ul class="nav-links">
                 <li><a href="buy.html">Buy</a></li>
                 <li><a href="rent.html">Rent</a></li>
@@ -34,10 +35,11 @@
                 <li><a href="girlspg.html">Girls PG</a></li>
                 <li><a href="hotel.html">Hotel</a></li>
             </ul>
-            <button id="nav-menu-toggle" class="nav-menu-toggle" aria-label="Open navigation menu" aria-expanded="false">☰</button>
+            <button id="nav-menu-toggle" class="nav-menu-toggle" aria-label="Open navigation menu" aria-expanded="false">Menu</button>
             <div class="nav-actions">
-                <button id="theme-toggle" class="btn-icon" aria-label="Toggle Dark Mode">🌓</button>
+                <button id="theme-toggle" class="btn-icon" aria-label="Toggle Dark Mode">Theme</button>
                 <button id="btn-user-login" class="btn-text">Log In</button>
+                <button id="btn-user-logout" class="btn-text hidden">Logout</button>
                 <button id="btn-post-property" class="btn-primary">Post Property</button>
             </div>
         </nav>
@@ -82,14 +84,9 @@
         <!-- Featured Properties -->
         <section class="featured-section section-padding">
             <h2 class="section-title">Featured Properties</h2>
-            <div class="view-toggle">
-                <button id="list-view-btn" class="btn-toggle active">List View</button>
-                <button id="map-view-btn" class="btn-toggle">Map View</button>
-            </div>
             <div id="properties-grid" class="properties-grid">
                 <!-- Injected via JS -->
             </div>
-            <div id="properties-map" class="properties-map hidden"></div>
         </section>
 
         <!-- CTA Section -->
@@ -105,11 +102,11 @@
         <footer class="footer">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <a href="index.html" class="footer-logo"><img src="assets/images/Logo.png" alt="Krishna Realty logo"></a>
+                    <img src="assets/images/logo-high-res.png" alt="PGnearby" class="site-logo">
                     <p>Elevating your lifestyle, one home at a time.</p>
                 </div>
                 <div class="footer-links">
-                    <a href="#">About Us</a>
+                    <a href="#">About Us</a> 
                     <a href="#">Contact</a>
                     <a href="#">Privacy Policy</a>
                 </div>
@@ -120,7 +117,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                &copy; 2026 Krishna Realty. All rights reserved<span id="admin-trigger" class="admin-trigger">-</span>
+                &copy; 2026 PGnearby. All rights reserved<span id="admin-trigger" class="admin-trigger">-</span>
             </div>
         </footer>
     </div>
@@ -138,9 +135,9 @@
                     <div class="upload-box" id="upload-box" onclick="document.getElementById('prop-image-input').click()">
                         <input type="file" id="prop-image-input" accept="image/*" style="display:none" multiple>
                         <div class="upload-placeholder" id="upload-placeholder">
-                            <div class="upload-icon">📷</div>
-                            <p>Click or drag &amp; drop photos here</p>
-                            <span>JPG, PNG, WebP · Max 5MB each</span>
+                            <div class="upload-icon">Photo</div>
+                            <p>Click or drag &amp; drop up to 10 photos here</p>
+                            <span>JPG, PNG, WebP - Max 150MB each</span>
                         </div>
                         <div class="upload-preview" id="upload-preview"></div>
                     </div>
@@ -152,10 +149,6 @@
                         <select id="prop-intent" required>
                             <option value="sell">Sell</option>
                             <option value="rent">Rent</option>
-                            <option value="boyspg">1 Sharing</option>
-                            <option value="2sharing">2 Sharing</option>
-                            <option value="3sharing">3 Sharing</option>
-                            <option value="4sharing">4 Sharing</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -184,7 +177,7 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Expected Price (₹/$)</label>
+                        <label>Expected Price (Rs/$)</label>
                         <input type="number" id="prop-price" placeholder="Enter amount" required>
                     </div>
                     <div class="form-group">
@@ -215,17 +208,15 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn-primary w-100" style="margin-top:0.5rem;">🏠 Submit Listing</button>
+                <button type="submit" class="btn-primary w-100" style="margin-top:0.5rem;">Submit Listing</button>
             </form>
         </div>
     </div>
-
-    <!-- EDIT PROPERTY MODAL -->
     <div id="modal-edit-property" class="modal hidden">
         <div class="modal-overlay" id="modal-overlay-edit"></div>
         <div class="modal-content glass-dark">
             <button class="btn-close" id="btn-close-edit-modal">&times;</button>
-            <h2>✏️ Edit Property</h2>
+            <h2>Edit Property</h2>
             <form id="form-edit-property">
                 <input type="hidden" id="edit-prop-id">
 
@@ -235,9 +226,9 @@
                     <div class="upload-box edit-upload-box" id="edit-upload-box" onclick="document.getElementById('edit-image-input').click()">
                         <input type="file" id="edit-image-input" accept="image/*" style="display:none">
                         <div class="upload-placeholder" id="edit-upload-placeholder">
-                            <div class="upload-icon">📷</div>
+                            <div class="upload-icon">Photo</div>
                             <p>Click to change photo</p>
-                            <span>JPG, PNG, WebP · Max 5MB</span>
+                            <span>JPG, PNG, WebP - Max 150MB</span>
                         </div>
                         <div class="upload-preview" id="edit-upload-preview"></div>
                     </div>
@@ -276,12 +267,12 @@
                 </div>
                 <div class="form-group">
                     <label>Description</label>
-                    <textarea id="edit-description" rows="3" placeholder="Describe the property…" class="edit-textarea"></textarea>
+                    <textarea id="edit-description" rows="3" placeholder="Describe the property..." class="edit-textarea"></textarea>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Price (₹/$)</label>
+                        <label>Price (Rs/$)</label>
                         <input type="number" id="edit-price" placeholder="Enter amount" required>
                     </div>
                     <div class="form-group">
@@ -315,13 +306,13 @@
                 <div class="form-group">
                     <label>Status</label>
                     <select id="edit-status" required>
-                        <option value="Active">✅ Active</option>
-                        <option value="Pending">⏳ Pending</option>
-                        <option value="Sold">🏷️ Sold</option>
+                        <option value="Active">Active</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Sold">Sold</option>
                     </select>
                 </div>
 
-                <button type="submit" class="btn-primary w-100" style="margin-top:0.5rem;">💾 Save Changes</button>
+                <button type="submit" class="btn-primary w-100" style="margin-top:0.5rem;">Save Changes</button>
             </form>
         </div>
     </div>
@@ -330,7 +321,7 @@
     <div id="view-user-login" class="view hidden login-view">
         <div class="login-card glass">
             <h2>User Login</h2>
-            <p>Welcome back to Krishna Realty.</p>
+            <p>Welcome back to PGnearby.</p>
             <form id="form-user-login">
                 <div class="form-group">
                     <label>Email</label>
@@ -338,7 +329,7 @@
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" placeholder="••••••••" required>
+                    <input type="password" placeholder="Password" required>
                 </div>
                 <button type="submit" class="btn-primary w-100">Sign In</button>
             </form>
@@ -352,7 +343,7 @@
     <div id="view-user-register" class="view hidden login-view">
         <div class="login-card glass">
             <h2>Create Account</h2>
-            <p>Join Krishna Realty today.</p>
+            <p>Join PGnearby today.</p>
             <form id="form-user-register">
                 <div class="form-group">
                     <label>Full Name</label>
@@ -364,7 +355,7 @@
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" placeholder="••••••••" required>
+                    <input type="password" placeholder="Password" required>
                 </div>
                 <button type="submit" class="btn-primary w-100">Sign Up</button>
             </form>
@@ -386,7 +377,7 @@
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" id="admin-pass" placeholder="••••••••" required>
+                    <input type="password" id="admin-pass" placeholder="Password" required>
                 </div>
                 <p id="admin-error" class="error-msg hidden">Invalid credentials.</p>
                 <button type="submit" class="btn-primary w-100">Access Dashboard</button>
@@ -398,7 +389,9 @@
     <!-- ADMIN DASHBOARD VIEW -->
     <div id="view-admin-dashboard" class="view hidden admin-layout">
         <aside class="admin-sidebar">
-            <div class="logo">KR Admin</div>
+            <div class="logo">
+                <img src="assets/images/logo-high-res.png" alt="PGnearby" class="site-logo">
+            </div>
             <ul class="admin-nav">
                 <li class="active"><a href="#">Dashboard</a></li>
                 <li><a href="#">Properties</a></li>
@@ -410,34 +403,34 @@
         <main class="admin-main">
             <header class="admin-header">
                 <h2>Dashboard Overview</h2>
-                <button id="admin-theme-toggle" class="btn-icon">🌓</button>
+                <button id="admin-theme-toggle" class="btn-icon">Theme</button>
             </header>
 
             <div class="admin-stats">
                 <div class="stat-card">
-                    <div class="stat-icon">🏠</div>
+                    <div class="stat-icon">Total</div>
                     <h3>Total Listings</h3>
-                    <p class="stat-value" id="stat-total">—</p>
+                    <p class="stat-value" id="stat-total">-</p>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">✅</div>
+                    <div class="stat-icon">Active</div>
                     <h3>Active</h3>
-                    <p class="stat-value" id="stat-active">—</p>
+                    <p class="stat-value" id="stat-active">-</p>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">⏳</div>
+                    <div class="stat-icon">Pending</div>
                     <h3>Pending Review</h3>
-                    <p class="stat-value" id="stat-pending">—</p>
+                    <p class="stat-value" id="stat-pending">-</p>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">👥</div>
+                    <div class="stat-icon">Users</div>
                     <h3>Registered Users</h3>
-                    <p class="stat-value" id="stat-users">—</p>
+                    <p class="stat-value" id="stat-users">-</p>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">👁</div>
+                    <div class="stat-icon">Views</div>
                     <h3>Total Views</h3>
-                    <p class="stat-value" id="stat-views">—</p>
+                    <p class="stat-value" id="stat-views">-</p>
                 </div>
             </div>
 
@@ -445,13 +438,13 @@
                 <h3>Recent Properties</h3>
                 <div class="table-responsive">
                     <div class="admin-table-toolbar">
-                        <input type="text" id="admin-search" placeholder="🔍  Search properties…"
+                        <input type="text" id="admin-search" placeholder="Search properties..."
                             class="admin-search-input">
                         <select id="admin-status-filter" class="admin-filter-select">
                             <option value="">All Statuses</option>
-                            <option value="Active">Active</option>
-                            <option value="Pending">Pending</option>
-                            <option value="Sold">Sold</option>
+                        <option value="Active">Active</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Sold">Sold</option>
                         </select>
                     </div>
                     <table class="admin-table">
@@ -481,8 +474,6 @@
     <!-- Scripts: App -->
     <script src="js/state.js"></script>
     <script src="js/app.js"></script>
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </body>
 
 </html>

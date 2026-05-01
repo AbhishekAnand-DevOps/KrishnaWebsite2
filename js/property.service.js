@@ -118,6 +118,7 @@ const PropertyService = (() => {
             status: data.status || 'Pending',
             description: data.description || '',
             image: data.image || 'assets/images/property1.png',
+            images: data.images || [],
             submittedBy: user ? user.id : 'guest',
             ownerName: data.ownerName || 'Unnamed',
             ownerPhone: data.ownerPhone || 'N/A',

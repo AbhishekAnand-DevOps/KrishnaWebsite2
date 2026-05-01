@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Details | Krishna Realty</title>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/details.css">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <a href="index.html">
+                <img src="assets/images/logo-high-res.png" alt="PGnearby" class="site-logo">
+            </a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="buy.html">Buy</a></li>
+            <li><a href="rent.html">Rent</a></li>
+            <li><a href="projects.html">Projects</a></li>
+            <li><a href="boyspg.html">Boys PG</a></li>
+            <li><a href="girlspg.html">Girls PG</a></li>
+            <li><a href="hotel.html">Hotel</a></li>
+        </ul>
+        <div class="nav-actions">
+            <button id="theme-toggle" class="btn-icon">🌓</button>
+            <a href="javascript:history.back()" class="btn-secondary">Go Back</a>
+        </div>
+    </nav>
+
+    <div class="details-container">
+        <div id="property-details-content">
+            <div class="loading-spinner"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <img src="assets/images/logo-high-res.png" alt="PGnearby" class="site-logo">
+                <p>Elevating your lifestyle, one home at a time.</p>
+            </div>
+            <div class="footer-links">
+                <a href="#">About Us</a> 
+                <a href="#">Contact</a>
+                <a href="#">Privacy Policy</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 PGnearby. All rights reserved
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="js/db.js"></script>
+    <script src="js/property.service.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const params = new URLSearchParams(window.location.search);
+            const id = parseInt(params.get('id'));
+            const content = document.getElementById('property-details-content');
+
+            if (!id) {
+                content.innerHTML = '<div class="empty-state"><h2>Invalid Property ID</h2><p>Please return to the listings page.</p></div>';
+                return;
+            }
+
+            await KrishnaDB.open();
+            try {
+                const prop = await PropertyService.getProperty(id);
+                if (!prop) {
+                    content.innerHTML = '<div class="empty-state"><h2>Property Not Found</h2><p>The property you are looking for does not exist.</p></div>';
+                    return;
+                }
+
+                document.title = `${prop.title} | Krishna Realty`;
+                const images = prop.images && prop.images.length > 0 ? prop.images : [prop.image || 'assets/images/property1.png'];
+                const firstLetter = prop.ownerName ? prop.ownerName.charAt(0).toUpperCase() : 'K';
+
+                content.innerHTML = `
+                    <div class="details-header-main slide-up" style="margin-bottom: 2rem;">
+                        <span class="badge badge-${prop.intent}" style="background: ${prop.intent === 'sell' ? 'var(--primary)' : '#3b82f6'}; color: #fff; padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.8rem; font-weight: 700; display: inline-block; margin-bottom: 1rem; text-transform: uppercase;">
+                            ${prop.intent === 'sell' ? 'For Sale' : 'For Rent'}
+                        </span>
+                        <h1 class="details-title" style="font-size: 3rem; margin-bottom: 0.5rem;">${prop.title}</h1>
+                        <p class="details-location" style="font-size: 1.2rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.5rem;">
+                            <span>📍</span> ${prop.location}
+                        </p>
+                    </div>
+
+                    <div class="details-grid slide-up">
+                        <div class="details-main">
+                            <div class="details-gallery">
+                                <div class="main-image-wrap">
+                                    <img src="${images[0]}" id="main-detail-image" alt="${prop.title}">
+                                </div>
+                                ${images.length > 1 ? `
+                                <div class="thumbs-grid">
+                                    ${images.map((img, i) => `
+                                        <div class="thumb-item ${i === 0 ? 'active' : ''}" onclick="updateDetailImage(this, '${img}')">
+                                            <img src="${img}" alt="Thumb ${i + 1}">
+                                        </div>
+                                    `).join('')}
+                                </div>` : ''}
+                            </div>
+
+                            <div class="details-description mt-4">
+                                <h3>Description</h3>
+                                <p>${prop.description || 'No description provided for this property.'}</p>
+                            </div>
+
+                            <div class="details-map mt-4">
+                                <h3>Location Map</h3>
+                                <div class="map-wrapper">
+                                    <iframe 
+                                        width="100%" 
+                                        height="400" 
+                                        style="border:0; border-radius: var(--radius);" 
+                                        allowfullscreen="" 
+                                        loading="lazy" 
+                                        src="https://maps.google.com/maps?q=${encodeURIComponent(prop.location)}&t=&z=14&ie=UTF8&iwloc=&output=embed">
+                                    </iframe>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="details-info">
+                            <div class="details-price-card" style="padding: 1.5rem; background: var(--surface-color); border-radius: var(--radius); border: 1px solid var(--border-color); margin-bottom: 1.5rem;">
+                                <div class="details-price" style="margin: 0; font-size: 2.5rem;">${prop.priceFormatted}</div>
+                                <p class="text-muted" style="margin-top: 0.5rem;">Estimated Price / Rent per month</p>
+                            </div>
+
+                            <div class="details-meta">
+                                <div class="meta-item">
+                                    <span class="meta-label">Bedrooms</span>
+                                    <span class="meta-value">${prop.beds}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Bathrooms</span>
+                                    <span class="meta-value">${prop.baths}</span>
+                                </div>
+                                <div class="meta-item">
+                                    <span class="meta-label">Area</span>
+                                    <span class="meta-value">${prop.area}</span>
+                                </div>
+                            </div>
+
+                            <div class="owner-card">
+                                <h3>Interested in this property?</h3>
+                                <div class="owner-info">
+                                    <div class="owner-avatar">${firstLetter}</div>
+                                    <div class="owner-details">
+                                        <h4>${prop.ownerName}</h4>
+                                        <p>Property Owner/Agent</p>
+                                    </div>
+                                </div>
+                                <div class="contact-actions">
+                                    <a href="tel:${prop.ownerPhone}" class="btn-primary btn-contact" style="display: block; text-align: center; margin-bottom: 1rem; text-decoration: none;">Call ${prop.ownerPhone}</a>
+                                    <a href="https://wa.me/${prop.ownerPhone.replace(/\D/g, '')}" target="_blank" class="btn-secondary btn-contact" style="display: block; text-align: center; text-decoration: none;">WhatsApp Enquiry</a>
+                                </div>
+                            </div>
+                            
+                            <div class="details-footer-meta mt-4">
+                                <p class="text-muted" style="font-size:0.8rem;">
+                                    Listed on: ${new Date(prop.createdAt).toLocaleDateString()} | Views: ${prop.views}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } catch (err) {
+                content.innerHTML = `<div class="empty-state"><h2>Error</h2><p>${err.message}</p></div>`;
+            }
+        });
+
+        window.updateDetailImage = (thumb, src) => {
+            document.getElementById('main-detail-image').src = src;
+            document.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+            thumb.classList.add('active');
+        };
+
+        // Theme Toggle for this page
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+    </script>
+</body>
+</html>

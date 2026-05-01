@@ -1,20 +1,21 @@
 /**
- * app.js — Main application controller
+ * app.js - Main application controller
  * Wires together the backend services (AuthService, PropertyService)
  * with the UI views and components.
  */
 
 document.addEventListener('DOMContentLoaded', async () => {
 
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     // DOM REFERENCES
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     const htmlElement = document.documentElement;
     const views = document.querySelectorAll('.view');
 
     const themeToggle = document.getElementById('theme-toggle');
     const adminThemeToggle = document.getElementById('admin-theme-toggle');
     const btnUserLogin = document.getElementById('btn-user-login');
+    const btnUserLogout = document.getElementById('btn-user-logout');
     const btnPostProperty = document.getElementById('btn-post-property');
     const btnCtaPost = document.getElementById('btn-cta-post');
     const adminTrigger = document.getElementById('admin-trigger');
@@ -41,101 +42,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const adminError = document.getElementById('admin-error');
 
     const propertiesGrid = document.getElementById('properties-grid');
-    const propertiesMap = document.getElementById('properties-map');
-    const listViewBtn = document.getElementById('list-view-btn');
-    const mapViewBtn = document.getElementById('map-view-btn');
     const adminTableBody = document.getElementById('admin-table-body');
     const adminStats = document.querySelectorAll('.stat-value');
     const navMenuToggle = document.getElementById('nav-menu-toggle');
     const navLinks = document.querySelector('.nav-links');
+    const propertyDetailsContent = document.getElementById('property-details-content');
+    const btnDetailsBack = document.getElementById('btn-details-back');
 
     const hasAdminViews = document.getElementById('view-admin-login') && document.getElementById('view-admin-dashboard');
-
-    // ─────────────────────────────────────────────
-    // MAP SUPPORT
-    // ─────────────────────────────────────────────
-    let map;
-    const locationCoords = {
-        'New York City, NY': [40.7128, -74.0060],
-        'Los Angeles, CA': [34.0522, -118.2437],
-        'Chicago, IL': [41.8781, -87.6298],
-        'Houston, TX': [29.7604, -95.3698],
-        'Phoenix, AZ': [33.4484, -112.0740],
-        'Philadelphia, PA': [39.9526, -75.1652],
-        'San Antonio, TX': [29.4241, -98.4936],
-        'San Diego, CA': [32.7157, -117.1611],
-        'Dallas, TX': [32.7767, -96.7970],
-        'San Jose, CA': [37.3382, -121.8863],
-        'Austin, TX': [30.2672, -97.7431],
-        'Jacksonville, FL': [30.3322, -81.6557],
-        'Fort Worth, TX': [32.7555, -97.3308],
-        'Columbus, OH': [39.9612, -82.9988],
-        'Charlotte, NC': [35.2271, -80.8431],
-        'San Francisco, CA': [37.7749, -122.4194],
-        'Indianapolis, IN': [39.7684, -86.1581],
-        'Seattle, WA': [47.6062, -122.3321],
-        'Denver, CO': [39.7392, -104.9903],
-        'Boston, MA': [42.3601, -71.0589]
-    };
-
-    function getCoordinates(location) {
-        return locationCoords[location] || [40.7128, -74.0060];
-    }
-
-    function renderMapView(props) {
-        if (!propertiesMap) return;
-        propertiesMap.classList.remove('hidden');
-        
-        if (map) {
-            map.remove();
-        }
-
-        map = L.map('properties-map').setView([39.8283, -98.5795], 4);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
-
-        props.forEach(prop => {
-            const coords = getCoordinates(prop.location);
-            const marker = L.marker(coords).addTo(map);
-            
-            marker.bindPopup(`
-                <div style="max-width: 200px;">
-                    <img src="${prop.image}" alt="${prop.title}" style="width: 100%; height: 100px; object-fit: cover; border-radius: 4px; margin-bottom: 8px;" onerror="this.src='assets/images/property1.png'">
-                    <h4 style="margin: 0 0 4px 0; font-size: 14px;">${prop.title}</h4>
-                    <p style="margin: 0 0 4px 0; color: #666; font-size: 12px;">${prop.location}</p>
-                    <p style="margin: 0; font-weight: bold; color: #007bff;">${prop.priceFormatted}</p>
-                </div>
-            `);
-        });
-
-        if (props.length > 0) {
-            const group = new L.featureGroup(props.map(prop => L.marker(getCoordinates(prop.location))));
-            map.fitBounds(group.getBounds().pad(0.1));
-        }
-    }
-
-    function switchToListView() {
-        if (listViewBtn) listViewBtn.classList.add('active');
-        if (mapViewBtn) mapViewBtn.classList.remove('active');
-        if (propertiesGrid) propertiesGrid.classList.remove('hidden');
-        if (propertiesMap) propertiesMap.classList.add('hidden');
-        renderProperties(state.properties);
-    }
-
-    function switchToMapView() {
-        if (listViewBtn) listViewBtn.classList.remove('active');
-        if (mapViewBtn) mapViewBtn.classList.add('active');
-        if (propertiesGrid) propertiesGrid.classList.add('hidden');
-        if (propertiesMap) propertiesMap.classList.remove('hidden');
-        renderMapView(state.properties);
-    }
-
-    if (listViewBtn && mapViewBtn) {
-        listViewBtn.addEventListener('click', switchToListView);
-        mapViewBtn.addEventListener('click', switchToMapView);
-    }
 
     if (!hasAdminViews) {
         if (themeToggle) {
@@ -151,7 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             navMenuToggle.addEventListener('click', () => {
                 const isOpen = navLinks.classList.toggle('open');
                 navMenuToggle.setAttribute('aria-expanded', isOpen.toString());
-                navMenuToggle.textContent = isOpen ? '✕' : '☰';
+                navMenuToggle.textContent = isOpen ? 'Close' : 'Menu';
             });
 
             navLinks.querySelectorAll('a').forEach(link => {
@@ -159,7 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     if (navLinks.classList.contains('open')) {
                         navLinks.classList.remove('open');
                         navMenuToggle.setAttribute('aria-expanded', 'false');
-                        navMenuToggle.textContent = '☰';
+                        navMenuToggle.textContent = 'Menu';
                     }
                 });
             });
@@ -186,9 +100,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // ─────────────────────────────────────────────
-    // BOOT — Initialize DB, seed data, restore session
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
+    // BOOT - Initialize DB, seed data, restore session
+    // -------------------------------------------------------------
     await KrishnaDB.open();
     await PropertyService.seedIfEmpty();
     await restoreSession();
@@ -201,9 +115,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         history.replaceState(null, '', window.location.pathname);
     }
 
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     // VIEW ROUTING
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     function switchView(viewId) {
         views.forEach(view => {
             view.classList.remove('active');
@@ -219,9 +133,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.scrollTo(0, 0);
     }
 
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     // THEME
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     function initTheme() {
         htmlElement.setAttribute('data-theme', state.theme);
     }
@@ -235,9 +149,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     themeToggle.addEventListener('click', toggleTheme);
     adminThemeToggle.addEventListener('click', toggleTheme);
 
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     // SESSION RESTORE
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     async function restoreSession() {
         state.currentUser = await AuthService.getCurrentUser();
         state.isAdmin = AuthService.isAdminLoggedIn();
@@ -249,25 +163,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (user) {
             btnUserLogin.textContent = user.name.split(' ')[0];
             btnUserLogin.title = `Logged in as ${user.email}`;
+            if (btnUserLogout) btnUserLogout.classList.remove('hidden');
         } else {
             btnUserLogin.textContent = 'Log In';
             btnUserLogin.title = '';
+            if (btnUserLogout) btnUserLogout.classList.add('hidden');
         }
     }
 
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     // PROPERTY RENDERING (Main View)
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     async function loadMainProperties(filters = {}) {
         propertiesGrid.innerHTML = `<div class="loading-spinner"></div>`;
         const props = await PropertyService.getProperties({ ...filters, status: 'Active' });
         state.properties = props;
-        
-        if (propertiesMap && !propertiesMap.classList.contains('hidden')) {
-            renderMapView(props);
-        } else {
-            renderProperties(props);
-        }
+        renderProperties(props);
     }
 
     function renderProperties(props) {
@@ -287,18 +198,42 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <h3 class="property-title">${prop.title}</h3>
                     <p class="text-muted" style="margin-bottom:1rem;">${prop.location}</p>
                     <div class="property-meta">
-                        <span>🛏 ${prop.beds} Beds</span>
-                        <span>🚿 ${prop.baths} Baths</span>
-                        <span>📐 ${prop.area}</span>
+                        <span>Beds: ${prop.beds}</span>
+                        <span>Baths: ${prop.baths}</span>
+                        <span>Area: ${prop.area}</span>
                     </div>
+                </div>
+                <div class="property-footer" style="padding: 0 1.5rem 1.5rem;">
+                    <a href="details.html?id=${prop.id}" class="btn-secondary w-100 btn-view-details" style="text-align: center; text-decoration: none; display: block;">View Details</a>
                 </div>
             </div>`;
         }).join('');
+
+        // Add click listeners to cards to navigate
+        propertiesGrid.querySelectorAll('.property-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const id = card.getAttribute('data-id');
+                window.location.href = `details.html?id=${id}`;
+            });
+        });
     }
 
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
+    // PROPERTY DETAILS (Redirect to details.html)
+    // -------------------------------------------------------------
+    window.showPropertyDetails = (id) => {
+        window.location.href = `details.html?id=${id}`;
+    };
+
+    window.updateDetailImage = (thumb, src) => {
+        document.getElementById('main-detail-image').src = src;
+        document.querySelectorAll('.thumb-item').forEach(t => t.classList.remove('active'));
+        thumb.classList.add('active');
+    };
+
+    // -------------------------------------------------------------
     // SEARCH
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     const searchInput = document.querySelector('.search-fields input[type="text"]');
     const searchSelects = document.querySelectorAll('.search-fields select');
     const searchBtn = document.querySelector('.btn-search');
@@ -339,50 +274,54 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     // NAVIGATION
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     btnUserLogin.addEventListener('click', () => {
         if (state.currentUser) {
-            // If logged in: clicking name shows options
-            const confirmed = confirm(`Logged in as ${state.currentUser.email}\n\nClick OK to log out.`);
-            if (confirmed) {
-                AuthService.logoutUser();
-                state.currentUser = null;
-                updateNavForUser();
-                showToast('Logged out successfully.', 'info');
-            }
+            showToast(`Logged in as ${state.currentUser.email}`, 'info');
         } else {
             switchView('view-user-login');
         }
     });
 
-    btnUserReturn.addEventListener('click', () => switchView('view-main'));
+    if (btnUserLogout) {
+        btnUserLogout.addEventListener('click', () => {
+            AuthService.logoutUser();
+            state.currentUser = null;
+            updateNavForUser();
+            showToast('Logged out successfully.', 'info');
+            switchView('view-main');
+        });
+    }
+
+    if (btnAdminReturn) btnAdminReturn.addEventListener('click', () => switchView('view-main'));
+    if (btnAdminLogout) {
+        btnAdminLogout.addEventListener('click', () => {
+            AuthService.logoutAdmin();
+            state.isAdmin = false;
+            showToast('Logged out of admin.', 'info');
+            switchView('view-main');
+        });
+    }
+
+    if (btnUserReturn) btnUserReturn.addEventListener('click', () => switchView('view-main'));
     if (btnRegisterReturn) btnRegisterReturn.addEventListener('click', () => switchView('view-main'));
-    if (linkCreateAccount) linkCreateAccount.addEventListener('click', (e) => { e.preventDefault(); switchView('view-user-register'); });
-    if (linkLoginAccount) linkLoginAccount.addEventListener('click', (e) => { e.preventDefault(); switchView('view-user-login'); });
-
-    adminTrigger.addEventListener('click', () => {
-        if (state.isAdmin) {
-            switchView('view-admin-dashboard');
-        } else {
-            switchView('view-admin-login');
-        }
-    });
-
-    btnAdminReturn.addEventListener('click', () => switchView('view-main'));
-    btnAdminLogout.addEventListener('click', () => {
-        AuthService.logoutAdmin();
-        state.isAdmin = false;
-        showToast('Logged out of admin.', 'info');
-        switchView('view-main');
-    });
-
-    // ─────────────────────────────────────────────
-    // MODAL — Post Property
-    // ─────────────────────────────────────────────
-    // Uploaded image Base64 store
+    
+    if (linkCreateAccount) {
+        linkCreateAccount.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchView('view-user-register');
+        });
+    }
+    if (linkLoginAccount) {
+        linkLoginAccount.addEventListener('click', (e) => {
+            e.preventDefault();
+            switchView('view-user-login');
+        });
+    }
     let uploadedImageBase64 = null;
+    let uploadedImagesBase64 = [];
 
     const openModal = () => {
         if (!state.currentUser) {
@@ -395,6 +334,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const closeModal = () => {
         modalPost.classList.add('hidden');
         uploadedImageBase64 = null;
+        uploadedImagesBase64 = [];
         const preview = document.getElementById('upload-preview');
         const placeholder = document.getElementById('upload-placeholder');
         if (preview) { preview.innerHTML = ''; preview.style.display = 'none'; }
@@ -406,7 +346,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     btnCloseModal.addEventListener('click', closeModal);
     modalOverlay.addEventListener('click', closeModal);
 
-    // ── Image Upload Logic ──
+    // -------------------------------------------------------------
     const imageInput = document.getElementById('prop-image-input');
     const uploadBox  = document.getElementById('upload-box');
     const uploadPreview   = document.getElementById('upload-preview');
@@ -423,28 +363,55 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     async function handleImageFiles(files) {
         if (!files || files.length === 0) return;
-        const file = files[0]; // Use first image as main
-        if (file.size > 5 * 1024 * 1024) {
-            showToast('Image exceeds 5MB limit.', 'warning'); return;
+        const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+        if (imageFiles.length === 0) {
+            showToast('Please upload image files only.', 'warning');
+            return;
         }
-        uploadedImageBase64 = await readFileAsBase64(file);
+        if (imageFiles.length > 10) {
+            showToast('You can upload up to 10 photos. Only the first 10 were selected.', 'warning');
+        }
+
+        const selectedFiles = imageFiles.slice(0, 10);
+        const oversizedFile = selectedFiles.find(file => file.size > 150 * 1024 * 1024);
+        if (oversizedFile) {
+            showToast(`${oversizedFile.name} exceeds 150MB limit.`, 'warning');
+            return;
+        }
+
+        uploadedImagesBase64 = await Promise.all(selectedFiles.map(readFileAsBase64));
+        uploadedImageBase64 = uploadedImagesBase64[0] || null;
         uploadPlaceholder.style.display = 'none';
         uploadPreview.style.display     = 'flex';
-        uploadPreview.innerHTML = `
-            <div class="upload-thumb-wrap">
-                <img src="${uploadedImageBase64}" class="upload-thumb" alt="Preview">
-                <button type="button" class="upload-remove" onclick="clearUpload()" title="Remove">✕</button>
+        uploadPreview.innerHTML = selectedFiles.map((file, index) => `
+            <div class="upload-thumb-item">
+                <div class="upload-thumb-wrap">
+                    <img src="${uploadedImagesBase64[index]}" class="upload-thumb" alt="Preview ${index + 1}">
+                    <button type="button" class="upload-remove" onclick="removeUploadedImage(${index})" title="Remove">&times;</button>
+                </div>
+                <p class="upload-thumb-name">${file.name}</p>
             </div>
-            <p class="upload-thumb-name">${file.name}</p>
-        `;
+        `).join('');
     }
 
     window.clearUpload = () => {
         uploadedImageBase64 = null;
+        uploadedImagesBase64 = [];
         uploadPreview.innerHTML = '';
         uploadPreview.style.display = 'none';
         uploadPlaceholder.style.display = 'flex';
         if (imageInput) imageInput.value = '';
+    };
+
+    window.removeUploadedImage = (index) => {
+        uploadedImagesBase64.splice(index, 1);
+        uploadedImageBase64 = uploadedImagesBase64[0] || null;
+        const item = uploadPreview.querySelectorAll('.upload-thumb-item')[index];
+        if (item) item.remove();
+        uploadPreview.querySelectorAll('.upload-remove').forEach((button, nextIndex) => {
+            button.setAttribute('onclick', `removeUploadedImage(${nextIndex})`);
+        });
+        if (uploadedImagesBase64.length === 0) window.clearUpload();
     };
 
     if (imageInput) {
@@ -460,7 +427,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // ── Form Submission ──
+    // -------------------------------------------------------------
     formPostProperty.addEventListener('submit', async (e) => {
         e.preventDefault();
         const btn = formPostProperty.querySelector('[type="submit"]');
@@ -478,14 +445,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 baths:      document.getElementById('prop-baths').value,
                 ownerName:  document.getElementById('prop-owner-name').value.trim(),
                 ownerPhone: document.getElementById('prop-owner-phone').value.trim(),
-                image:      uploadedImageBase64 || 'assets/images/property1.png',
+                image:      uploadedImagesBase64[0] || uploadedImageBase64 || 'assets/images/property1.png',
+                images:     uploadedImagesBase64,
                 status:     'Active'   // Immediately visible on main page
             };
 
             await PropertyService.createProperty(data, state.currentUser);
             closeModal();
             formPostProperty.reset();
-            showToast('🏠 Property listed successfully!', 'success');
+            showToast('Property listed successfully!', 'success');
             await loadMainProperties();
             await refreshAdminDashboard();
         } catch (err) {
@@ -495,9 +463,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     // USER AUTH FORMS
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
 
     // Login
     formUserLogin.addEventListener('submit', async (e) => {
@@ -573,9 +541,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     // ADMIN DASHBOARD
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     async function refreshAdminDashboard() {
         const stats = await PropertyService.getStats();
 
@@ -609,16 +577,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 </td>
                 <td>${prop.priceFormatted}</td>
                 <td style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-                    <button class="action-btn" onclick="openEditModal(${prop.id})" style="color:#c99855;border-color:#c99855;">✏️ Edit</button>
-                    <button class="action-btn" onclick="adminDeleteProperty(${prop.id})" style="color:#ef4444;border-color:#fca5a5;">🗑 Delete</button>
+                    <button class="action-btn" onclick="openEditModal(${prop.id})" style="color:#c99855;border-color:#c99855;">Edit</button>
+                    <button class="action-btn" onclick="adminDeleteProperty(${prop.id})" style="color:#ef4444;border-color:#fca5a5;">Delete</button>
                 </td>
             </tr>
         `).join('');
     }
 
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     // ADMIN TABLE SEARCH & FILTER
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     const adminSearch = document.getElementById('admin-search');
     const adminStatusFilter = document.getElementById('admin-status-filter');
 
@@ -637,9 +605,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (adminSearch) adminSearch.addEventListener('input', applyAdminFilters);
     if (adminStatusFilter) adminStatusFilter.addEventListener('change', applyAdminFilters);
 
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     // ADMIN ACTIONS (exposed globally for table buttons)
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     window.adminChangeStatus = async (id, status) => {
         try {
             await PropertyService.updateStatus(id, status);
@@ -662,9 +630,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     // EDIT PROPERTY MODAL
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     let editImageBase64 = null; // holds new image if user picks one
 
     const closeEditModal = () => {
@@ -688,14 +656,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     async function handleEditImageFiles(files) {
         if (!files || files.length === 0) return;
         const file = files[0];
-        if (file.size > 5 * 1024 * 1024) { showToast('Image exceeds 5MB limit.', 'warning'); return; }
+        if (file.size > 150 * 1024 * 1024) { showToast('Image exceeds 150MB limit.', 'warning'); return; }
         editImageBase64 = await readFileAsBase64(file);
         editUploadPH.style.display    = 'none';
         editUploadPreview.style.display = 'flex';
         editUploadPreview.innerHTML = `
             <div class="upload-thumb-wrap">
                 <img src="${editImageBase64}" class="upload-thumb" alt="Preview">
-                <button type="button" class="upload-remove" onclick="clearEditUpload()" title="Remove">✕</button>
+                <button type="button" class="upload-remove" onclick="clearEditUpload()" title="Remove">&times;</button>
             </div>
             <p class="upload-thumb-name">${file.name}</p>`;
     }
@@ -720,7 +688,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // Open edit modal — fetch property and pre-fill all fields
+    // Open edit modal - fetch property and pre-fill all fields
     window.openEditModal = async (id) => {
         const prop = await PropertyService.getPropertyRaw(id);
         if (!prop) { showToast('Property not found.', 'error'); return; }
@@ -784,7 +752,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             await PropertyService.updateProperty(id, updates);
             closeEditModal();
-            showToast('✅ Property updated successfully!', 'success');
+            showToast('Property updated successfully!', 'success');
             await loadMainProperties();
             await refreshAdminDashboard();
         } catch (err) {
@@ -794,14 +762,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
     // UI HELPERS
-    // ─────────────────────────────────────────────
+    // -------------------------------------------------------------
 
     function setLoading(btn, isLoading) {
         btn.disabled = isLoading;
         btn._origText = btn._origText || btn.textContent;
-        btn.textContent = isLoading ? 'Please wait…' : btn._origText;
+        btn.textContent = isLoading ? 'Please wait...' : btn._origText;
     }
 
     function showFormError(form, message) {
@@ -840,3 +808,4 @@ document.addEventListener('DOMContentLoaded', async () => {
         }, 3500);
     }
 });
+
